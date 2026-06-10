@@ -1,0 +1,36 @@
+---
+title: "Next.js 14 入门指南"
+date: "2024-03-01"
+excerpt: "Next.js 14 为开发者体验和性能带来了显著提升。在本文中，我们将探讨 Server Actions 和局部预渲染等新特性。"
+category: "碎碎念"
+tags: ["Next.js", "React", "前端"]
+---
+
+# Next.js 14 入门指南
+
+Next.js 14 已经发布，它比以往任何时候都更好。这次的重点是稳定性和性能，特别是全新的 **App Router**。
+
+## 核心特性
+
+1. **Server Actions**：无需编写 API 路由即可修改数据。
+2. **局部预渲染 (Partial Pre-rendering)**：兼具静态和动态的优势。
+3. **改进的 Metadata API**：更好的 SEO 管理。
+
+### Example Code
+
+```javascript
+async function createInvoice(formData: FormData) {
+  'use server';
+ 
+  const rawFormData = {
+    customerId: formData.get('customerId'),
+    amount: formData.get('amount'),
+    status: formData.get('status'),
+  };
+ 
+  // mutate data
+  // revalidate cache
+}
+```
+
+Stay tuned for more updates!

@@ -1,0 +1,43 @@
+.toc {
+  position: sticky;
+  top: calc(var(--header-height) + 2rem);
+  width: 220px;
+  height: fit-content;
+  padding-right: 2rem;
+  border-right: 1px solid var(--border);
+}
+
+.title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted-foreground);
+  margin-bottom: 1rem;
+}
+
+.list {
+  list-style: none;
+}
+
+.item {
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.item a {
+  color: var(--secondary);
+}
+
+.item a:hover {
+  color: var(--primary);
+}
+
+.subItem {
+  padding-left: 1rem;
+}
+
+@media (max-width: 1280px) {
+  .toc {
+    display: none;
+  }
+}
