@@ -27,10 +27,12 @@ export default function Sidebar({ recentPosts, categories, tags }: SidebarProps)
 
           <p>IT & 作者 分享一些碎碎念 </p>
           <div className={styles.socials}>
-            <Link href="#" aria-label="GitHub 代码库"><Code size={18} /></Link>
-            <Link href="#" aria-label="Twitter 社交媒体"><Globe size={18} /></Link>
-            <Link href="#" aria-label="LinkedIn 职业档案"><User size={18} /></Link>
-            <Link href="#" aria-label="发送邮件"><Mail size={18} /></Link>
+            <Link href="https://github.com/Adgaiz/Adgaiz-Blog" target="_blank" rel="noopener noreferrer" aria-label="GitHub 代码库">
+              <Code size={18} />
+            </Link>
+            <Link href="mailto:adgaiz@163.com" aria-label="发送邮件">
+              <Mail size={18} />
+            </Link>
           </div>
         </div>
       </section>
