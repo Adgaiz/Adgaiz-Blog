@@ -29,7 +29,7 @@ export default function Sidebar({ recentPosts, categories, tags }: SidebarProps)
           <div className={styles.socials}>
             <Link href="https://github.com/Adgaiz/Adgaiz-Blog" target="_blank" rel="noopener noreferrer" aria-label="GitHub 代码库">
               <Image 
-                src="/github-icon.png" 
+                src="/github.svg" 
                 alt="GitHub" 
                 width={18} 
                 height={18} 
