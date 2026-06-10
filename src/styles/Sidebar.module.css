@@ -73,6 +73,15 @@
   transform: translateY(-2px);
 }
 
+.socialIcon {
+  display: block;
+  transition: all var(--transition-fast);
+}
+
+[data-theme='dark'] .socialIcon {
+  filter: invert(1);
+}
+
 .recentList {
   list-style: none;
 }
