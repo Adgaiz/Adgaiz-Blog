@@ -1,5 +1,7 @@
 ---
 title: "商户资质图片上传问题技术复盘"
+date: "2026-06-11"
+excerpt: "图片上传遇到的几个问题分享"
 category: "Bug技术文档"
 tags: ["Bug复盘", "前端", "uniapp"]
 ---

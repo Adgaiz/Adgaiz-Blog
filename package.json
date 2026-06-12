@@ -9,9 +9,12 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@octokit/rest": "^22.0.1",
+    "@uiw/react-md-editor": "^4.1.1",
     "clsx": "^2.1.1",
     "fuse.js": "^7.4.2",
     "gray-matter": "^4.0.3",
+    "jose": "^6.2.3",
     "lucide-react": "^1.17.0",
     "next": "16.2.9",
     "next-mdx-remote": "^6.0.0",

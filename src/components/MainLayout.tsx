@@ -3,6 +3,7 @@ import Sidebar from './Sidebar';
 import BackToTop from './BackToTop';
 import styles from '@/styles/MainLayout.module.css';
 import { getSortedPostsData } from '@/lib/posts';
+import Link from 'next/link';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -36,7 +37,7 @@ export default function MainLayout({ children, showSidebar = true }: MainLayoutP
       </div>
       <footer className={styles.footer}>
         <div className={styles.footerContent}>
-          <p>© {new Date().getFullYear()} By Adgaiz </p>
+          <p>© {new Date().getFullYear()} By Adgaiz <Link href="/admin/login" style={{ opacity: 0, cursor: 'default' }}>Admin</Link></p>
         </div>
       </footer>
       <BackToTop />

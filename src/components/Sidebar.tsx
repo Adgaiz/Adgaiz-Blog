@@ -25,7 +25,7 @@ export default function Sidebar({ recentPosts, categories, tags }: SidebarProps)
           </div>
           <h3>Adgaiz</h3>
 
-          <p>IT & 作者 分享一些碎碎念 </p>
+          <p>IT & 摄影 & 游戏 分享一些碎碎念 </p>
           <div className={styles.socials}>
             <Link href="https://github.com/Adgaiz/Adgaiz-Blog" target="_blank" rel="noopener noreferrer" aria-label="GitHub 代码库">
               <Image 

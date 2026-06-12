@@ -1,0 +1,120 @@
+.container {
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--foreground);
+}
+
+.createBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--primary);
+  color: white;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  transition: background-color var(--transition-fast);
+}
+
+.createBtn:hover {
+  background-color: var(--primary-hover);
+}
+
+.loading {
+  text-align: center;
+  padding: 3rem;
+  color: var(--muted-foreground);
+}
+
+.tableContainer {
+  background-color: var(--card);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  overflow-x: auto;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.table th,
+.table td {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.table th {
+  background-color: var(--muted);
+  color: var(--muted-foreground);
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.postTitle {
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.categoryBadge {
+  background-color: var(--accent);
+  color: var(--primary);
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.actionBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background-color: var(--muted);
+  color: var(--secondary);
+  transition: all var(--transition-fast);
+}
+
+.actionBtn:hover {
+  background-color: var(--primary);
+  color: white;
+}
+
+.deleteBtn:hover {
+  background-color: #dc2626;
+  color: white;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 3rem;
+  color: var(--muted-foreground);
+}
