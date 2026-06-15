@@ -22,7 +22,8 @@ export async function generateStaticParams() {
 
 export default async function PostPage({ params }: PostPageProps) {
   const { slug } = await params;
-  const post = getPostData(slug);
+  const decodedSlug = decodeURIComponent(slug);
+  const post = getPostData(decodedSlug);
 
   if (!post) {
     notFound();

@@ -241,7 +241,17 @@ tags: ${JSON.stringify(tagArray)}
       </div>
 
       <div className={styles.editorContainer}>
-        <div data-color-mode="light">
+        <div 
+          data-color-mode="light"
+          onPaste={(e) => {
+            const items = Array.from(e.clipboardData?.items || []);
+            const hasImage = items.some(item => item.type.indexOf('image') !== -1);
+            if (hasImage) {
+              e.preventDefault();
+              onImagePasted(e.clipboardData, (str) => setContent(content + '\n' + str));
+            }
+          }}
+        >
           <MDEditor
             value={content}
             onChange={(val) => setContent(val || '')}
