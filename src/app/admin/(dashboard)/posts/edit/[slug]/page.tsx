@@ -65,29 +65,108 @@ export default function EditPostPage({ params }: { params: Promise<{ slug: strin
     }
   };
 
-  const handleImageUpload = async (file: File) => {
-    return new Promise<string>((resolve, reject) => {
+  const compressImage = async (file: File): Promise<File> => {
+    return new Promise((resolve, reject) => {
+      // Don't compress small files or non-jpegs/pngs if we want to keep it simple,
+      // but compressing all images to a max width is generally good.
+      if (!file.type.match(/image\/(jpeg|png|webp)/)) {
+        return resolve(file);
+      }
+
       const reader = new FileReader();
-      reader.onload = async () => {
-        try {
-          const base64 = reader.result as string;
-          const res = await fetch('/api/admin/upload', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ filename: file.name, base64 }),
-          });
-          const data = await res.json();
-          if (data.success) {
-            resolve(data.url);
-          } else {
-            reject(new Error(data.message));
-          }
-        } catch (e) {
-          reject(e);
-        }
-      };
-      reader.onerror = (e) => reject(e);
       reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new window.Image();
+        img.src = event.target?.result as string;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+
+          // Max dimensions
+          const MAX_WIDTH = 1920;
+          const MAX_HEIGHT = 1080;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            return resolve(file); // Fallback
+          }
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // Convert to blob and then to file. Use JPEG for better compression of large photos.
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                const newFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
+                  type: 'image/jpeg',
+                  lastModified: Date.now(),
+                });
+                resolve(newFile);
+              } else {
+                resolve(file);
+              }
+            },
+            'image/jpeg',
+            0.8 // 80% quality
+          );
+        };
+        img.onerror = () => resolve(file);
+      };
+      reader.onerror = () => resolve(file);
+    });
+  };
+
+  const handleImageUpload = async (rawFile: File) => {
+    return new Promise<string>(async (resolve, reject) => {
+      try {
+        // Compress the image before converting to base64
+        const file = await compressImage(rawFile);
+        
+        const reader = new FileReader();
+        reader.onload = async () => {
+          try {
+            const base64 = reader.result as string;
+            
+            // Double check size after compression (Vercel limit is 4.5MB, base64 adds ~33%)
+            // 4.5MB * 0.75 = ~3.3MB binary limit. Let's set a safe limit of 3MB.
+            if (file.size > 3 * 1024 * 1024) {
+              return reject(new Error('图片压缩后仍然过大 (超过 3MB)，请手动压缩或缩小尺寸。'));
+            }
+
+            const res = await fetch('/api/admin/upload', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ filename: file.name, base64 }),
+            });
+            const data = await res.json();
+            if (data.success) {
+              resolve(data.url);
+            } else {
+              reject(new Error(data.message));
+            }
+          } catch (e) {
+            reject(e);
+          }
+        };
+        reader.onerror = (e) => reject(e);
+        reader.readAsDataURL(file);
+      } catch (err) {
+         reject(err);
+      }
     });
   };
 
