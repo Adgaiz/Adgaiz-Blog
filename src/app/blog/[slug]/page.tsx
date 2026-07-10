@@ -2,12 +2,13 @@ import { getPostData, getSortedPostsData } from '@/lib/posts';
 import MainLayout from '@/components/MainLayout';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { notFound } from 'next/navigation';
-import { Calendar, Clock, ChevronLeft } from 'lucide-react';
+import { Calendar, Eye, ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
 import styles from '@/styles/BlogPost.module.css';
 import TableOfContents from '@/components/TableOfContents';
 import { components } from '@/components/MDXComponents';
 import ReadingModeToggle from '@/components/ReadingModeToggle';
+import ViewCount from '@/components/ViewCount';
 
 interface PostPageProps {
   params: Promise<{ slug: string }>;
@@ -48,8 +49,8 @@ export default async function PostPage({ params }: PostPageProps) {
                 {post.date}
               </span>
               <span className={styles.metaItem}>
-                <Clock size={14} />
-                {post.readingTime}
+                <Eye size={14} />
+                <ViewCount slug={post.slug} initialViews={post.views} increment />
               </span>
             </div>
             <h1 className={styles.title}>{post.title}</h1>

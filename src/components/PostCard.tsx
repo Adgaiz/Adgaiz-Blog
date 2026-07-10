@@ -1,17 +1,18 @@
 import Link from 'next/link';
-import { Calendar, Clock } from 'lucide-react';
+import { Calendar, Eye } from 'lucide-react';
 import styles from '@/styles/PostCard.module.css';
+import ViewCount from '@/components/ViewCount';
 
 interface PostCardProps {
   title: string;
   excerpt: string;
   date: string;
-  readingTime: string;
+  views: number;
   slug: string;
   category?: string;
 }
 
-export default function PostCard({ title, excerpt, date, readingTime, slug, category }: PostCardProps) {
+export default function PostCard({ title, excerpt, date, views, slug, category }: PostCardProps) {
   return (
     <article className={styles.card}>
       <Link href={`/blog/${slug}`} className={styles.link}>
@@ -23,8 +24,8 @@ export default function PostCard({ title, excerpt, date, readingTime, slug, cate
               {date}
             </span>
             <span className={styles.metaItem}>
-              <Clock size={14} />
-              {readingTime}
+              <Eye size={14} />
+              <ViewCount slug={slug} initialViews={views} />
             </span>
           </div>
           <h2 className={styles.title}>{title}</h2>

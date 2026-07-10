@@ -9,7 +9,7 @@ export interface PostData {
   title: string;
   date: string;
   excerpt: string;
-  readingTime: string;
+  views: number;
   content: string;
   category?: string;
   tags?: string[];
@@ -56,7 +56,7 @@ export function getSortedPostsData(): PostData[] {
         title,
         date,
         excerpt: data.excerpt || content.replace(/#+\s+.+$/gm, '').trim().slice(0, 150).replace(/\r?\n/g, ' ') + '...',
-        readingTime: calculateReadingTime(content),
+        views: data.views || 0,
         content: sanitizedContent,
         category: data.category || '未分类',
         tags: data.tags || [],
@@ -101,16 +101,9 @@ export function getPostData(slug: string): PostData | null {
     title,
     date,
     excerpt: data.excerpt || content.replace(/#+\s+.+$/gm, '').trim().slice(0, 150).replace(/\r?\n/g, ' ') + '...',
-    readingTime: calculateReadingTime(content),
+    views: data.views || 0,
     content: sanitizedContent,
     category: data.category || '未分类',
     tags: data.tags || [],
   };
-}
-
-function calculateReadingTime(content: string): string {
-  const wordsPerMinute = 200;
-  const words = content.trim().split(/\s+/).length;
-  const minutes = Math.ceil(words / wordsPerMinute);
-  return `阅读时间 ${minutes} 分钟`;
 }

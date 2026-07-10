@@ -1,6 +1,7 @@
 import { getSortedPostsData } from '@/lib/posts';
 import MainLayout from '@/components/MainLayout';
 import PostCard from '@/components/PostCard';
+import { ViewCountsProvider } from '@/components/ViewCount';
 import { notFound } from 'next/navigation';
 import { ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
@@ -45,19 +46,21 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
           分类：{categoryName}
         </h1>
         
-        <div>
-          {filteredPosts.map((post) => (
-            <PostCard
-              key={post.slug}
-              title={post.title}
-              excerpt={post.excerpt}
-              date={post.date}
-              readingTime={post.readingTime}
-              slug={post.slug}
-              category={post.category}
-            />
-          ))}
-        </div>
+        <ViewCountsProvider slugs={filteredPosts.map((post) => post.slug)}>
+          <div>
+            {filteredPosts.map((post) => (
+              <PostCard
+                key={post.slug}
+                title={post.title}
+                excerpt={post.excerpt}
+                date={post.date}
+                views={post.views}
+                slug={post.slug}
+                category={post.category}
+              />
+            ))}
+          </div>
+        </ViewCountsProvider>
       </section>
     </MainLayout>
   );
