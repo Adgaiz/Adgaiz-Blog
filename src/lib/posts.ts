@@ -9,6 +9,7 @@ export interface PostData {
   title: string;
   date: string;
   excerpt: string;
+  cover?: string;
   views: number;
   content: string;
   category?: string;
@@ -45,17 +46,14 @@ export function getSortedPostsData(): PostData[] {
       }
 
       // Sanitize style strings that break MDX (e.g., style="zoom:150%")
-      const sanitizedContent = content.replace(/style="([^"]*)"/g, (match, p1) => {
-        // Simple conversion or removal. For now, let's remove to be safe, 
-        // or convert to JSX if it's simple.
-        return ''; 
-      });
+      const sanitizedContent = content.replace(/style="([^"]*)"/g, '');
 
       return {
         slug,
         title,
         date,
         excerpt: data.excerpt || content.replace(/#+\s+.+$/gm, '').trim().slice(0, 150).replace(/\r?\n/g, ' ') + '...',
+        cover: typeof data.cover === 'string' && data.cover ? data.cover : undefined,
         views: data.views || 0,
         content: sanitizedContent,
         category: data.category || '未分类',
@@ -92,15 +90,14 @@ export function getPostData(slug: string): PostData | null {
   }
 
   // Sanitize style strings that break MDX (e.g., style="zoom:150%")
-  const sanitizedContent = content.replace(/style="([^"]*)"/g, (match, p1) => {
-    return ''; 
-  });
+  const sanitizedContent = content.replace(/style="([^"]*)"/g, '');
 
   return {
     slug,
     title,
     date,
     excerpt: data.excerpt || content.replace(/#+\s+.+$/gm, '').trim().slice(0, 150).replace(/\r?\n/g, ' ') + '...',
+    cover: typeof data.cover === 'string' && data.cover ? data.cover : undefined,
     views: data.views || 0,
     content: sanitizedContent,
     category: data.category || '未分类',

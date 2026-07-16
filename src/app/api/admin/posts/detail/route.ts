@@ -45,6 +45,7 @@ export async function GET(request: NextRequest) {
         tags: data.tags || [],
         date: data.date || '',
         excerpt: data.excerpt || '',
+        cover: typeof data.cover === 'string' ? data.cover : '',
         content // Raw content needed for editor
       };
 
@@ -52,8 +53,9 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json({ success: false, message: 'File not found' }, { status: 404 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Get Post Detail Error:', error);
-    return NextResponse.json({ success: false, message: error.message || 'Fetch failed' }, { status: 500 });
+    const message = error instanceof Error ? error.message : 'Fetch failed';
+    return NextResponse.json({ success: false, message }, { status: 500 });
   }
 }

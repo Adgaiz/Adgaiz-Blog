@@ -5,6 +5,7 @@ import { ViewCountsProvider } from '@/components/ViewCount';
 import { notFound } from 'next/navigation';
 import { ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
+import gridStyles from '@/styles/PostGrid.module.css';
 
 interface TagPageProps {
   params: Promise<{ tag: string }>;
@@ -45,7 +46,7 @@ export default async function TagPage({ params }: TagPageProps) {
         </h1>
         
         <ViewCountsProvider slugs={filteredPosts.map((post) => post.slug)}>
-          <div>
+          <div className={gridStyles.grid}>
             {filteredPosts.map((post) => (
               <PostCard
                 key={post.slug}
@@ -55,6 +56,7 @@ export default async function TagPage({ params }: TagPageProps) {
                 views={post.views}
                 slug={post.slug}
                 category={post.category}
+                cover={post.cover}
               />
             ))}
           </div>

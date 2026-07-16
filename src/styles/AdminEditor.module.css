@@ -132,6 +132,142 @@
   min-height: 80px;
 }
 
+.coverField {
+  display: grid;
+  grid-template-columns: minmax(240px, 360px) minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.coverPreview {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background-color: var(--muted);
+  background-position: center;
+  background-size: cover;
+}
+
+.coverPlaceholder {
+  background:
+    radial-gradient(circle at 76% 22%, color-mix(in srgb, var(--primary) 72%, transparent) 0 10%, transparent 10.5%),
+    radial-gradient(circle at 23% 77%, color-mix(in srgb, var(--accent-foreground) 24%, transparent) 0 20%, transparent 20.5%),
+    linear-gradient(145deg, color-mix(in srgb, var(--accent) 88%, var(--card)), color-mix(in srgb, var(--primary) 34%, var(--muted)));
+}
+
+.coverOrb,
+.coverRing {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+}
+
+.coverOrb {
+  top: 18%;
+  left: 12%;
+  width: 44%;
+  aspect-ratio: 1;
+  border: 1px solid color-mix(in srgb, var(--accent-foreground) 26%, transparent);
+  background: color-mix(in srgb, var(--card) 16%, transparent);
+  backdrop-filter: blur(5px);
+}
+
+.coverRing {
+  right: -8%;
+  bottom: -18%;
+  width: 46%;
+  aspect-ratio: 1;
+  border: 1px solid color-mix(in srgb, var(--accent-foreground) 30%, transparent);
+}
+
+.coverBrand {
+  position: absolute;
+  right: 7%;
+  bottom: 7%;
+  color: var(--accent-foreground);
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+
+.coverControls {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.coverActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.fileInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.uploadBtn,
+.removeCoverBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 42px;
+  padding: 0.65rem 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+}
+
+.uploadBtn {
+  color: white;
+  background: var(--primary);
+  cursor: pointer;
+}
+
+.uploadBtn:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.fileInput:focus-visible + .uploadBtn {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.uploadBtnDisabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.removeCoverBtn {
+  border: 1px solid var(--border);
+  color: var(--foreground);
+  background: var(--background);
+}
+
+.removeCoverBtn:hover:not(:disabled) {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.coverHelp {
+  margin: 0;
+  color: var(--muted-foreground);
+  font-size: 0.8125rem;
+}
+
 .editorContainer {
   background-color: var(--card);
   border-radius: 12px;
@@ -158,4 +294,19 @@
   height: 50vh;
   font-size: 1.125rem;
   color: var(--muted-foreground);
+}
+
+@media (max-width: 720px) {
+  .formRow {
+    flex-direction: column;
+  }
+
+  .coverField {
+    grid-template-columns: 1fr;
+  }
+
+  .coverPreview {
+    width: 100%;
+    max-width: 420px;
+  }
 }

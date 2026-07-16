@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect, use, type ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ChevronLeft, Save, Loader2 } from 'lucide-react';
+import { ChevronLeft, ImagePlus, Save, Loader2, Trash2 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import styles from '@/styles/AdminEditor.module.css';
 
@@ -23,6 +23,9 @@ export default function EditPostPage({ params }: { params: Promise<{ slug: strin
   const [category, setCategory] = useState('未分类');
   const [tags, setTags] = useState('');
   const [excerpt, setExcerpt] = useState('');
+  const [cover, setCover] = useState('');
+  const [coverPreview, setCoverPreview] = useState('');
+  const [coverUploading, setCoverUploading] = useState(false);
   const [content, setContent] = useState('');
   const [date, setDate] = useState(() => new Date().toISOString().split('T')[0]);
   const [originalSlug, setOriginalSlug] = useState('');
@@ -31,42 +34,56 @@ export default function EditPostPage({ params }: { params: Promise<{ slug: strin
   const [currentSlug, setCurrentSlug] = useState('');
 
   useEffect(() => {
-    if (!isNew) {
-      fetchPost(slug);
-    }
-  }, [slug, isNew]);
+    return () => {
+      if (coverPreview.startsWith('blob:')) {
+        URL.revokeObjectURL(coverPreview);
+      }
+    };
+  }, [coverPreview]);
 
-  const fetchPost = async (postSlug: string) => {
-    try {
-      // In a real app we might want to fetch directly via API, 
-      // but we can just use the public API or create a specific admin GET API.
-      // Since all posts are fetched in /api/posts, we can get it from there for simplicity.
-      // A better way is a specific API, let's just create /api/admin/posts?slug=...
-      const res = await fetch(`/api/admin/posts/detail?slug=${postSlug}`);
-      if (res.ok) {
+  useEffect(() => {
+    if (isNew) return;
+
+    let cancelled = false;
+
+    const loadPost = async () => {
+      try {
+        const res = await fetch(`/api/admin/posts/detail?slug=${slug}`);
+        if (!res.ok || cancelled) return;
+
         const data = await res.json();
-        if (data.success && data.post) {
+        if (data.success && data.post && !cancelled) {
           const p = data.post;
           setTitle(p.title || '');
           setCategory(p.category || '未分类');
           setTags((p.tags || []).join(', '));
           setExcerpt(p.excerpt || '');
+          setCover(p.cover || '');
+          setCoverPreview(p.cover || '');
           setContent(p.content || '');
           setDate(p.date || new Date().toISOString().split('T')[0]);
           setCurrentSlug(p.slug);
           setOriginalSlug(p.slug);
         }
+      } catch (error) {
+        if (!cancelled) {
+          console.error('Error fetching post:', error);
+          alert('加载文章失败');
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
       }
-    } catch (error) {
-      console.error('Error fetching post:', error);
-      alert('加载文章失败');
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+
+    void loadPost();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [slug, isNew]);
 
   const compressImage = async (file: File): Promise<File> => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       // Don't compress small files or non-jpegs/pngs if we want to keep it simple,
       // but compressing all images to a max width is generally good.
       if (!file.type.match(/image\/(jpeg|png|webp)/)) {
@@ -184,10 +201,42 @@ export default function EditPostPage({ params }: { params: Promise<{ slug: strin
       try {
         const url = await handleImageUpload(file);
         setMarkdownInsert(`![${file.name}](${url})`);
-      } catch (err) {
+      } catch {
         alert('图片上传失败');
       }
     }
+  }
+
+  const handleCoverUpload = async (event: ChangeEvent<HTMLInputElement>) => {
+    const input = event.currentTarget;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('请选择图片文件');
+      input.value = '';
+      return;
+    }
+
+    const localPreview = URL.createObjectURL(file);
+    setCoverPreview(localPreview);
+    setCoverUploading(true);
+
+    try {
+      const url = await handleImageUpload(file);
+      setCover(url);
+    } catch (error) {
+      setCoverPreview(cover);
+      alert(error instanceof Error ? `封面上传失败：${error.message}` : '封面上传失败');
+    } finally {
+      setCoverUploading(false);
+      input.value = '';
+    }
+  };
+
+  const handleRemoveCover = () => {
+    setCover('');
+    setCoverPreview('');
   };
 
   const handleSave = async () => {
@@ -207,7 +256,7 @@ date: "${date}"
 excerpt: "${excerpt.replace(/"/g, '\\"').replace(/\n/g, ' ')}"
 category: "${category.replace(/"/g, '\\"')}"
 tags: ${JSON.stringify(tagArray)}
----
+${cover ? `cover: "${cover.replace(/"/g, '\\"')}"\n` : ''}---
 
 `;
 
@@ -232,7 +281,7 @@ tags: ${JSON.stringify(tagArray)}
       } else {
         alert('保存失败: ' + data.message);
       }
-    } catch (err) {
+    } catch {
       alert('网络错误，保存失败');
     } finally {
       setSaving(false);
@@ -255,10 +304,10 @@ tags: ${JSON.stringify(tagArray)}
         <button 
           className={styles.saveBtn} 
           onClick={handleSave} 
-          disabled={saving}
+          disabled={saving || coverUploading}
         >
-          {saving ? <Loader2 className={styles.spin} size={18} /> : <Save size={18} />}
-          {saving ? '保存中...' : '发布保存'}
+          {saving || coverUploading ? <Loader2 className={styles.spin} size={18} /> : <Save size={18} />}
+          {saving ? '保存中...' : coverUploading ? '封面上传中...' : '发布保存'}
         </button>
       </div>
 
@@ -316,6 +365,60 @@ tags: ${JSON.stringify(tagArray)}
             className={styles.textarea}
             rows={2}
           />
+        </div>
+
+        <div className={styles.formGroup}>
+          <label>封面图（可选）</label>
+          <div className={styles.coverField}>
+            <div
+              className={`${styles.coverPreview} ${!coverPreview ? styles.coverPlaceholder : ''}`}
+              style={coverPreview ? { backgroundImage: `url("${coverPreview.replace(/"/g, '%22')}")` } : undefined}
+              role="img"
+              aria-label={coverPreview ? '当前文章封面预览' : '默认 Adgaiz 占位封面预览'}
+            >
+              {!coverPreview && (
+                <>
+                  <span className={styles.coverOrb} />
+                  <span className={styles.coverRing} />
+                  <span className={styles.coverBrand}>Adgaiz</span>
+                </>
+              )}
+            </div>
+            <div className={styles.coverControls}>
+              <div className={styles.coverActions}>
+                <input
+                  id="cover-upload"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className={styles.fileInput}
+                  onChange={handleCoverUpload}
+                  disabled={coverUploading}
+                />
+                <label
+                  htmlFor="cover-upload"
+                  className={`${styles.uploadBtn} ${coverUploading ? styles.uploadBtnDisabled : ''}`}
+                  aria-disabled={coverUploading}
+                >
+                  {coverUploading ? <Loader2 className={styles.spin} size={18} /> : <ImagePlus size={18} />}
+                  {coverUploading ? '上传中...' : coverPreview ? '更换封面' : '上传封面'}
+                </label>
+                {(cover || coverPreview) && (
+                  <button
+                    type="button"
+                    className={styles.removeCoverBtn}
+                    onClick={handleRemoveCover}
+                    disabled={coverUploading}
+                  >
+                    <Trash2 size={18} />
+                    移除封面
+                  </button>
+                )}
+              </div>
+              <p className={styles.coverHelp}>
+                推荐使用 4:3 横图；未设置时，文章卡片将显示统一的 Adgaiz 占位封面。
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 

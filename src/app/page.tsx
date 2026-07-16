@@ -2,9 +2,10 @@ import MainLayout from '@/components/MainLayout';
 import PostCard from '@/components/PostCard';
 import { ViewCountsProvider } from '@/components/ViewCount';
 import { getSortedPostsData } from '@/lib/posts';
+import gridStyles from '@/styles/PostGrid.module.css';
 
 export default function Home() {
-  const allPostsData = getSortedPostsData().slice(0, 5); // Show latest 5 as per requirement
+  const allPostsData = getSortedPostsData().slice(0, 6);
 
   return (
     <MainLayout>
@@ -13,7 +14,7 @@ export default function Home() {
           最新文章
         </h1>
         <ViewCountsProvider slugs={allPostsData.map((post) => post.slug)}>
-          <div>
+          <div className={gridStyles.grid}>
             {allPostsData.map((post) => (
               <PostCard
                 key={post.slug}
@@ -23,6 +24,7 @@ export default function Home() {
                 views={post.views}
                 slug={post.slug}
                 category={post.category}
+                cover={post.cover}
               />
             ))}
           </div>
